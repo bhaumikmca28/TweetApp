@@ -42,6 +42,7 @@ namespace TweetApp.Services
             else
             {
                 response.Data = CreateToken(user);
+                response.Message = user.Name +" is loggedin Successfully!";
             }
             return response;
         }
@@ -59,6 +60,7 @@ namespace TweetApp.Services
             }
             user.PasswordSalt = passwordSalt;
             user.PasswordHash = passwordHash;
+            user.Name = user.Name;
             _Context.User.Add(user);
             _Context.SaveChanges();
 
