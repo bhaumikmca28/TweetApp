@@ -16,15 +16,31 @@ namespace TweetApp.Services
             _Context = context;
             _Configuration = configuration;
         }
-        public bool IsUserExist(string username)
-        {
-            if (_Context.User.Any(u => u.UserName.ToLower() == username.ToLower()))
-            {
-                return true;
-            }
-            return false;
-        }
 
+        public ServiceResponse<int> Register(User user, string password)
+        {
+            ServiceResponse<int> response = new ServiceResponse<int>();
+
+            CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
+            if (IsUserExist(user.UserName))
+            {
+                response.Success = false;
+                response.Message = "User already exist";
+                return response;
+            }
+            user.PasswordSalt = passwordSalt;
+            user.PasswordHash = passwordHash;
+            user.Name = user.Name;
+            user.SecurityQuestion = user.SecurityQuestion;
+            user.SecurityAnswer = user.SecurityAnswer;
+            _Context.User.Add(user);
+            _Context.SaveChanges();
+
+            response.Data = user.Id;
+            response.Message = "User added successfully!";
+
+            return response;
+        }
         public ServiceResponse<string> Login(string username, string password)
         {
             var response = new ServiceResponse<string>();
@@ -42,34 +58,52 @@ namespace TweetApp.Services
             else
             {
                 response.Data = CreateToken(user);
-                response.Message = user.Name +" is loggedin Successfully!";
+                response.Message = user.Name + " is loggedin Successfully!";
             }
             return response;
         }
-
-        public ServiceResponse<int> Register(User user, string password)
+        public ServiceResponse<int> ForgotPassword(User user, string password, string newPassword)
         {
-            ServiceResponse<int> response = new ServiceResponse<int>();
-
-            CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
-            if (IsUserExist(user.UserName))
+            var response = new ServiceResponse<int>();
+            var fetchedUser = _Context.User.FirstOrDefault(u => u.UserName.ToLower().Equals(user.UserName));
+            if (fetchedUser == null)
             {
                 response.Success = false;
-                response.Message = "User already exist";
-                return response;
+                response.Message = "User not found";
             }
-            user.PasswordSalt = passwordSalt;
-            user.PasswordHash = passwordHash;
-            user.Name = user.Name;
-            _Context.User.Add(user);
-            _Context.SaveChanges();
-
-            response.Data = user.Id;
-            response.Message = "User added successfully!";
-
+            else if (!VerifyPasswordHash(password, fetchedUser.PasswordHash, fetchedUser.PasswordSalt))
+            {
+                response.Success = false;
+                response.Message = "Wrong password!";
+            }
+            else
+            {
+                if ((!fetchedUser.SecurityQuestion.ToLower().Equals(user.SecurityQuestion.ToLower()))
+                    && (!fetchedUser.SecurityAnswer.ToLower().Equals(user.SecurityAnswer.ToLower())))
+                {
+                    response.Success = false;
+                    response.Message = "Wrong security question or answer!";
+                    return response;
+                }
+                CreatePasswordHash(newPassword, out byte[] passwordHash, out byte[] passwordSalt);
+                fetchedUser.PasswordSalt = passwordSalt;
+                fetchedUser.PasswordHash = passwordHash;
+                _Context.User.Update(fetchedUser);
+                _Context.SaveChanges();
+                response.Data = fetchedUser.Id;
+                response.Message = "Forgotted password reset successfully!";
+            }
             return response;
         }
 
+        public bool IsUserExist(string username)
+        {
+            if (_Context.User.Any(u => u.UserName.ToLower() == username.ToLower()))
+            {
+                return true;
+            }
+            return false;
+        }
         private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             using (var hmac = new System.Security.Cryptography.HMACSHA512())
@@ -86,7 +120,6 @@ namespace TweetApp.Services
                 return computeHash.SequenceEqual(passwordHash);
             }
         }
-
         private string CreateToken(User user)
         {
             List<Claim> claims = new List<Claim>
