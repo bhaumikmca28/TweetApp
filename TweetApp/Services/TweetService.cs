@@ -28,20 +28,17 @@ namespace TweetApp.Services
             return response;
         }
 
-        public ServiceResponse<Tweet> UpdateTweet(Tweet UpdatedTweet)
+        public ServiceResponse<Tweet> UpdateTweet(UpdateTweetDto UpdatedTweet)
         {
             var response = new ServiceResponse<Tweet>();
-            var tweet = _context.Tweets.FirstOrDefault(t => t.Id == UpdatedTweet.Id);
+            Tweet tweet = _context.Tweets.FirstOrDefault(t => t.Id == UpdatedTweet.Id);
+            _mapper.Map(UpdatedTweet, tweet);
             if (tweet == null)
             {
                 response.Success = false;
                 response.Message = "Tweet not found!";
                 return response;
             }
-            tweet.TweetMsg = UpdatedTweet.TweetMsg;
-            tweet.TweetDate = UpdatedTweet.TweetDate;
-            tweet.User.Id = UpdatedTweet.User.Id;
-            _context.Tweets.Update(tweet);
             _context.SaveChanges();
 
             response.Data = tweet;

@@ -41,7 +41,7 @@ namespace TweetApp.Controllers
         }
 
         [HttpPut]
-        public IActionResult Update(Tweet updatedtweet)
+        public IActionResult Update(UpdateTweetDto updatedtweet)
         {
             var response = _tweetService.UpdateTweet(updatedtweet);
             if (response.Data == null)

@@ -9,7 +9,7 @@ namespace TweetApp.Services
         ServiceResponse<List<Tweet>> GetAllTweetsByUserName(string UserName);
         ServiceResponse<Tweet> GetTweetsById(int id);
         ServiceResponse<int> AddTweet(AddTweetDto NewTweet);
-        ServiceResponse<Tweet> UpdateTweet(Tweet UpdatedTweet);
+        ServiceResponse<Tweet> UpdateTweet(UpdateTweetDto UpdatedTweet);
         ServiceResponse<Tweet> DeleteTweet(int id);
     }
 }

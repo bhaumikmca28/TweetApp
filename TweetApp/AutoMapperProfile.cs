@@ -9,7 +9,8 @@ namespace TweetApp
         public AutoMapperProfile()
         {
             CreateMap<User, GetUserDto>();
-            CreateMap<Tweet, AddTweetDto>().ReverseMap();
+            CreateMap<AddTweetDto,Tweet>();
+            CreateMap<UpdateTweetDto,Tweet>();
         }
     }
 }
