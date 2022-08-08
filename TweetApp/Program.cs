@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using TweetApp;
 using TweetApp.Data;
 using TweetApp.Services;
 
@@ -12,6 +13,7 @@ builder.Services.AddControllers();
 
 // automapper
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
+//builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
 //dbContext
 builder.Services.AddDbContextPool<DataContext>(options =>
@@ -22,6 +24,7 @@ builder.Services.AddDbContextPool<DataContext>(options =>
 //Services
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ITweetService, TweetService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {

@@ -4,11 +4,12 @@ using TweetApp.Models;
 
 namespace TweetApp
 {
-    public class AutoMapperProfile: Profile
+    public class AutoMapperProfile : Profile
     {
         public AutoMapperProfile()
         {
             CreateMap<User, GetUserDto>();
+            CreateMap<Tweet, AddTweetDto>().ReverseMap();
         }
     }
 }

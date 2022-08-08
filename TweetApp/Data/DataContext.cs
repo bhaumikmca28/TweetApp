@@ -10,5 +10,6 @@ namespace TweetApp.Data
 
         }
         public DbSet<User> User { get; set; }
+        public DbSet<Tweet> Tweets { get; set; }
     }
 }
