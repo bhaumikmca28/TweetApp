@@ -10,6 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+// automapper
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
+
 //dbContext
 builder.Services.AddDbContextPool<DataContext>(options =>
 {
@@ -18,7 +21,7 @@ builder.Services.AddDbContextPool<DataContext>(options =>
 
 //Services
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
-
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
