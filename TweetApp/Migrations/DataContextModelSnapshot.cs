@@ -87,10 +87,15 @@ namespace TweetApp.Migrations
             modelBuilder.Entity("TweetApp.Models.Tweet", b =>
                 {
                     b.HasOne("TweetApp.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Tweets")
                         .HasForeignKey("UserId");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TweetApp.Models.User", b =>
+                {
+                    b.Navigation("Tweets");
                 });
 #pragma warning restore 612, 618
         }

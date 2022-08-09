@@ -12,7 +12,7 @@ using TweetApp.Data;
 namespace TweetApp.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220805063728_InitialMigration")]
+    [Migration("20220809063945_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,6 +23,31 @@ namespace TweetApp.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("TweetApp.Models.Tweet", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("TweetDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TweetMsg")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Tweets");
+                });
 
             modelBuilder.Entity("TweetApp.Models.User", b =>
                 {
@@ -44,6 +69,14 @@ namespace TweetApp.Migrations
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
+                    b.Property<string>("SecurityAnswer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SecurityQuestion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -51,6 +84,20 @@ namespace TweetApp.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("User");
+                });
+
+            modelBuilder.Entity("TweetApp.Models.Tweet", b =>
+                {
+                    b.HasOne("TweetApp.Models.User", "User")
+                        .WithMany("Tweets")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TweetApp.Models.User", b =>
+                {
+                    b.Navigation("Tweets");
                 });
 #pragma warning restore 612, 618
         }

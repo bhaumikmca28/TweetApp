@@ -5,10 +5,28 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TweetApp.Migrations
 {
-    public partial class NewTweetstable : Migration
+    public partial class InitialMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "User",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PasswordHash = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    PasswordSalt = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SecurityQuestion = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SecurityAnswer = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_User", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Tweets",
                 columns: table => new
@@ -39,6 +57,9 @@ namespace TweetApp.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Tweets");
+
+            migrationBuilder.DropTable(
+                name: "User");
         }
     }
 }
